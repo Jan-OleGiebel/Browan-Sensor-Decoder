@@ -8,6 +8,7 @@ MerryIoT Sensor Payload Parser Samlpe Code for Reference
 Contributors names and contact info
 
 jason.kung@browan.com
+jan-ole.giebel@jo-technik.com -> Payload-Encoder-MerryIoT-Motion-Detection.js
 
 ## Version History
 
