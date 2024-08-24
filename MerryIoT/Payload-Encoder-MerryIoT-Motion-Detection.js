@@ -3,6 +3,7 @@
 
 function encodeDownlink(input) {
   var outputBytes = [];
+  var fPort = 204;
 
   function dec2HexSwap(cellValue) {
     let hexValue = cellValue.toString(16).toUpperCase().padStart(4, '0');
@@ -26,6 +27,19 @@ function encodeDownlink(input) {
   //Note that if this key exists no data can be sent!
   if(input.data.hasOwnProperty('getConfiguration')) {
     outputBytes.push(0x00);
+  } else if(input.data.hasOwnProperty('bleFOTA')) {
+    fPort = 206;
+    outputBytes.push(0x44);
+    outputBytes.push(0x46);
+    outputBytes.push(0x55);
+  } else if(input.data.hasOwnProperty('reboot')) {
+    fPort = 206;
+    outputBytes.push(0x52);
+    outputBytes.push(0x45);
+    outputBytes.push(0x42);
+    outputBytes.push(0x4F);
+    outputBytes.push(0x4F);
+    outputBytes.push(0x54);
   } else {
     //Must be int (seconds)
     if (input.data.hasOwnProperty("setKeepAliveInterval")) {
@@ -74,7 +88,7 @@ function encodeDownlink(input) {
 
   return {
     bytes: outputBytes,
-    fPort: 204,
+    fPort: fPort,
     warnings: [],
     errors: [],
   };
