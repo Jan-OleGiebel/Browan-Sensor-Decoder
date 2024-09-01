@@ -11,173 +11,173 @@
 ////////////*MerryIot Motion sensor*////////////
 
 //hex to binary function
-function hex2bin(hex){
-  return (parseInt(hex, 16).toString(2)).padStart(8, '0');
+function hex2bin(hex) {
+	return (parseInt(hex, 16).toString(2)).padStart(8, '0');
 }
 
 function hexSwapToDec(byte1, byte2) {
-      // Swap the bytes back to the original value
-      let hexValue = byte2.toString(16).padStart(2, '0') + byte1.toString(16).padStart(2, '0');
-      return parseInt(hexValue, 16);
+	// Swap the bytes back to the original value
+	let hexValue = byte2.toString(16).padStart(2, '0') + byte1.toString(16).padStart(2, '0');
+	return parseInt(hexValue, 16);
 }
-    
+
 //MerryIot Motion sensor
 function decodeUplink(input) {
 	var fPort = input.fPort;
 	var payloadlens = input.bytes.length;
-	if(fPort==122 && payloadlens==10){
+	if (fPort == 122 && payloadlens == 10) {
 		var intput_list = input.bytes;
-		var battery_int=intput_list[1];// battery calculate
-		battery_volt = (21+battery_int)/10;
-		temperature_hex= (intput_list[3].toString(16).padStart(2, '0'))+(intput_list[2].toString(16).padStart(2, '0'));  //temperature calculate
-		if((parseInt(temperature_hex, 16))>1250){
-			temperature = ((parseInt(temperature_hex, 16))-65536)/10;
+		var battery_int = intput_list[1];// battery calculate
+		battery_volt = (21 + battery_int) / 10;
+		temperature_hex = (intput_list[3].toString(16).padStart(2, '0')) + (intput_list[2].toString(16).padStart(2, '0'));  //temperature calculate
+		if ((parseInt(temperature_hex, 16)) > 1250) {
+			temperature = ((parseInt(temperature_hex, 16)) - 65536) / 10;
 		}
-		else{
-			temperature = (parseInt(temperature_hex, 16))/10;
+		else {
+			temperature = (parseInt(temperature_hex, 16)) / 10;
 		}
-		humi =  intput_list[4]; //Humidity calculate
+		humi = intput_list[4]; //Humidity calculate
 		var motion_hex = intput_list[0].toString(16).padStart(2, '0'); // Sensor Status calculate
 		var motion_binary = hex2bin(motion_hex);
 		var motion_st = motion_binary.substring(7, 8);
 		var button_st = motion_binary.substring(6, 7);
-		var Tamper_st = motion_binary.substring(5, 6); 
+		var Tamper_st = motion_binary.substring(5, 6);
 		motion = parseInt(motion_st); // Motion status
 		button = parseInt(button_st); // Button pressed
 		tamper = parseInt(Tamper_st); // Tamper detected
 
-		var time_hex = (intput_list[6].toString(16).padStart(2, '0'))+(intput_list[5].toString(16).padStart(2, '0'));
+		var time_hex = (intput_list[6].toString(16).padStart(2, '0')) + (intput_list[5].toString(16).padStart(2, '0'));
 		time = parseInt(time_hex, 16);   //Time elapsed since last event trigger
-		var count_hex = (intput_list[9].toString(16).padStart(2, '0'))+(intput_list[8].toString(16).padStart(2, '0'))+(intput_list[7].toString(16).padStart(2, '0'));
+		var count_hex = (intput_list[9].toString(16).padStart(2, '0')) + (intput_list[8].toString(16).padStart(2, '0')) + (intput_list[7].toString(16).padStart(2, '0'));
 		count = parseInt(count_hex, 16);  //Total count of event triggers
-		  
+
 		return {
-		data: {
-		  battery_volt,
-		  temperature,
-		  humi,
-		  motion,
-		  button,
-		  tamper,
-		  time,
-		  count
-		},
+			data: {
+				battery_volt,
+				temperature,
+				humi,
+				motion,
+				button,
+				tamper,
+				time,
+				count
+			},
 		};
 	}
-	else if (fPort==122 && payloadlens==9){
-			var intput_list = input.bytes;
-			var battery_int=intput_list[1];// battery calculate
-			battery_volt = (21+battery_int)/10;
-			temperature_int= intput_list[2]; //temperature calculate
-			if(temperature_int>125){
-				temperature = temperature_int-256;
-			}
-			else{
-				temperature = temperature_int;
-			}
-			humi =  intput_list[3]; //Humidity calculate
-			var motion_hex = intput_list[0].toString(16).padStart(2, '0'); // Sensor Status calculate
-			var motion_binary = hex2bin(motion_hex);
-			var motion_st = motion_binary.substring(7, 8);
-			var button_st = motion_binary.substring(6, 7);
-			var Tamper_st = motion_binary.substring(5, 6); 
-			motion = parseInt(motion_st); // Motion status
-			button = parseInt(button_st); // Button pressed
-			tamper = parseInt(Tamper_st); // Tamper detected
+	else if (fPort == 122 && payloadlens == 9) {
+		var intput_list = input.bytes;
+		var battery_int = intput_list[1];// battery calculate
+		battery_volt = (21 + battery_int) / 10;
+		temperature_int = intput_list[2]; //temperature calculate
+		if (temperature_int > 125) {
+			temperature = temperature_int - 256;
+		}
+		else {
+			temperature = temperature_int;
+		}
+		humi = intput_list[3]; //Humidity calculate
+		var motion_hex = intput_list[0].toString(16).padStart(2, '0'); // Sensor Status calculate
+		var motion_binary = hex2bin(motion_hex);
+		var motion_st = motion_binary.substring(7, 8);
+		var button_st = motion_binary.substring(6, 7);
+		var Tamper_st = motion_binary.substring(5, 6);
+		motion = parseInt(motion_st); // Motion status
+		button = parseInt(button_st); // Button pressed
+		tamper = parseInt(Tamper_st); // Tamper detected
 
-			var time_hex = (intput_list[5].toString(16).padStart(2, '0'))+(intput_list[4].toString(16).padStart(2, '0'));
-			time = parseInt(time_hex, 16);   //Time elapsed since last event trigger
-			var count_hex = (intput_list[8].toString(16).padStart(2, '0'))+(intput_list[7].toString(16).padStart(2, '0'))+(intput_list[6].toString(16).padStart(2, '0'));
-			count = parseInt(count_hex, 16);  //Total count of event triggers
+		var time_hex = (intput_list[5].toString(16).padStart(2, '0')) + (intput_list[4].toString(16).padStart(2, '0'));
+		time = parseInt(time_hex, 16);   //Time elapsed since last event trigger
+		var count_hex = (intput_list[8].toString(16).padStart(2, '0')) + (intput_list[7].toString(16).padStart(2, '0')) + (intput_list[6].toString(16).padStart(2, '0'));
+		count = parseInt(count_hex, 16);  //Total count of event triggers
 
-			return {
+		return {
 			data: {
-			battery_volt,
-			temperature,
-			humi,
-			motion,
-			button,
-			tamper,
-			time,
-			count
+				battery_volt,
+				temperature,
+				humi,
+				motion,
+				button,
+				tamper,
+				time,
+				count
 			},
-			};
-	} else if (fPort==204){
-	  let data = {};
-    let bytes = input.bytes;
-    let index = 0;
-    while (index < bytes.length) {
-      let key = bytes[index];
-      index++;
-  
-      switch (key) {
-        case 0x00: {
-          data.keepAliveInterval = hexSwapToDec(bytes[index], bytes[index + 1]);
-          index += 2;
-          break;
-        }
-        case 0x02: {
-          data.occupiedInterval = hexSwapToDec(bytes[index], bytes[index + 1]);
-          index += 2;
-          break;
-        }
-        case 0x03: {
-          data.freeDetectionTime = bytes[index];
-          index++;
-          break;
-        }
-        case 0x04: {
-          data.triggerCountWhileOccupied = hexSwapToDec(bytes[index], bytes[index + 1]);
-          index += 2;
-          break;
-        }
-        case 0x05: {
-          if (
-            bytes[index] === 0x00 &&
-            bytes[index + 1] === 0xE0 &&
-            bytes[index + 2] === 0x21 &&
-            bytes[index + 3] === 0x00
-          ) {
-            data.PIRMode = "room";
-          } else if (
-            bytes[index] === 0x00 &&
-            bytes[index + 1] === 0x14 &&
-            bytes[index + 2] === 0x81 &&
-            bytes[index + 3] === 0x01
-          ) {
-            data.PIRMode = "desk";
-          }
-          index += 4;
-          break;
-        }
-        case 0x06: {
-          data.vibrationDetection = bytes[index] === 0x01 ? 1 : 0;
-          index++;
-          break;
-        }
-        default: {
-          // Handle unknown keys or errors
-          break;
-        }
-      }
-    }
-  
-    return {
-      data: data,
-      warnings: [],
-      errors: [],
-    };
-	} else{
-			var fPort = input.fPort;
-			var payloadlength = input.bytes.length;
-			var message = 'Invalid fPort or payload length';
-			return {
-			  data: {
+		};
+	} else if (fPort == 204) {
+		let data = {};
+		let bytes = input.bytes;
+		let index = 0;
+		while (index < bytes.length) {
+			let key = bytes[index];
+			index++;
+
+			switch (key) {
+				case 0x00: {
+					data.keepAliveInterval = hexSwapToDec(bytes[index], bytes[index + 1]);
+					index += 2;
+					break;
+				}
+				case 0x02: {
+					data.occupiedInterval = hexSwapToDec(bytes[index], bytes[index + 1]);
+					index += 2;
+					break;
+				}
+				case 0x03: {
+					data.freeDetectionTime = bytes[index];
+					index++;
+					break;
+				}
+				case 0x04: {
+					data.triggerCountWhileOccupied = hexSwapToDec(bytes[index], bytes[index + 1]);
+					index += 2;
+					break;
+				}
+				case 0x05: {
+					if (
+						bytes[index] === 0x00 &&
+						bytes[index + 1] === 0xE0 &&
+						bytes[index + 2] === 0x21 &&
+						bytes[index + 3] === 0x00
+					) {
+						data.PIRMode = "room";
+					} else if (
+						bytes[index] === 0x00 &&
+						bytes[index + 1] === 0x14 &&
+						bytes[index + 2] === 0x81 &&
+						bytes[index + 3] === 0x01
+					) {
+						data.PIRMode = "desk";
+					}
+					index += 4;
+					break;
+				}
+				case 0x06: {
+					data.vibrationDetection = bytes[index] === 0x01 ? 1 : 0;
+					index++;
+					break;
+				}
+				default: {
+					// Handle unknown keys or errors
+					break;
+				}
+			}
+		}
+
+		return {
+			data: data,
+			warnings: [],
+			errors: [],
+		};
+	} else {
+		var fPort = input.fPort;
+		var payloadlength = input.bytes.length;
+		var message = 'Invalid fPort or payload length';
+		return {
+			data: {
 				fPort,
 				payloadlength,
 				message,
-			  },
-			};
+			},
+		};
 	}
 }
 
@@ -186,37 +186,37 @@ function decodeUplink(input) {
 ////////////* MerryIot CO2 sensor*////////////
 
 //hex to binary function
-function hex2bin(hex){
-  return (parseInt(hex, 16).toString(2)).padStart(8, '0');
+function hex2bin(hex) {
+	return (parseInt(hex, 16).toString(2)).padStart(8, '0');
 }
 
 //MerryIot CO2 sensor
 function decodeUplink(input) {
 	var fPort = input.fPort;
 	var payloadlens = input.bytes.length;
-	if(fPort==127 && payloadlens==7){
+	if (fPort == 127 && payloadlens == 7) {
 		var intput_list = input.bytes;
-		var battery_int=intput_list[1];// battery calculate
-		battery_volt = (21+battery_int)/10;
-		temperature_hex= (intput_list[3].toString(16).padStart(2, '0'))+(intput_list[2].toString(16).padStart(2, '0'));  //temperature calculate
-		if((parseInt(temperature_hex, 16))>1250){
-			temperature = ((parseInt(temperature_hex, 16))-65536)/10;
+		var battery_int = intput_list[1];// battery calculate
+		battery_volt = (21 + battery_int) / 10;
+		temperature_hex = (intput_list[3].toString(16).padStart(2, '0')) + (intput_list[2].toString(16).padStart(2, '0'));  //temperature calculate
+		if ((parseInt(temperature_hex, 16)) > 1250) {
+			temperature = ((parseInt(temperature_hex, 16)) - 65536) / 10;
 		}
-		else{
-			temperature = (parseInt(temperature_hex, 16))/10;
+		else {
+			temperature = (parseInt(temperature_hex, 16)) / 10;
 		}
-		humi =  intput_list[4]; //Humidity calculate
+		humi = intput_list[4]; //Humidity calculate
 		var co2_hex = intput_list[0].toString(16).padStart(2, '0'); // Sensor Status calculate
 		var co2_binary = hex2bin(co2_hex);
-		var trigger_st = co2_binary.substring(7, 8); 
-		var button_st = co2_binary.substring(6, 7); 
-		var co2threshold_st = co2_binary.substring(3, 4); 
+		var trigger_st = co2_binary.substring(7, 8);
+		var button_st = co2_binary.substring(6, 7);
+		var co2threshold_st = co2_binary.substring(3, 4);
 		var co2calibration_st = co2_binary.substring(2, 3);
 		trigger = parseInt(trigger_st); //Trigger Event
 		button = parseInt(button_st); //Button pressed
 		co2threshold = parseInt(co2threshold_st);  // CO2 is over the threshold 
 		co2calibration = parseInt(co2calibration_st);// CO2 Calibration flag
-		var co2ppm_hex =(intput_list[6].toString(16).padStart(2, '0'))+(intput_list[5].toString(16).padStart(2, '0'));
+		var co2ppm_hex = (intput_list[6].toString(16).padStart(2, '0')) + (intput_list[5].toString(16).padStart(2, '0'));
 		co2_ppm = parseInt(co2ppm_hex, 16);  //CO2 ppm calculate
 		if (co2_ppm < 0) {
 			co2_ppm = 0;
@@ -227,74 +227,74 @@ function decodeUplink(input) {
 		}
 
 		return {
-		data: {
-		  battery_volt,
-		  temperature,
-		  humi,
-		  trigger,
-		  button,
-		  co2threshold,
-		  co2calibration,
-		  co2_ppm
-		},
+			data: {
+				battery_volt,
+				temperature,
+				humi,
+				trigger,
+				button,
+				co2threshold,
+				co2calibration,
+				co2_ppm
+			},
 		};
 	}
-	else if (fPort==127 && payloadlens==6){
-			var intput_list = input.bytes;
-			var battery_int=intput_list[1];// battery calculate
-			battery_volt = (21+battery_int)/10;
-			temperature_int= intput_list[2]; //temperature calculate
-			if(temperature_int>125){
-				temperature = temperature_int-256;
-			}
-			else{
-				temperature = temperature_int;
-			}
-			humi =  intput_list[3]; //Humidity calculate
-			var co2_hex = intput_list[0].toString(16).padStart(2, '0'); // Sensor Status calculate
-			var co2_binary = hex2bin(co2_hex);
-			var trigger_st = co2_binary.substring(7, 8); 
-			var button_st = co2_binary.substring(6, 7); 
-			var co2threshold_st = co2_binary.substring(3, 4); 
-			var co2calibration_st = co2_binary.substring(2, 3);
-			trigger = parseInt(trigger_st); //Trigger Event
-			button = parseInt(button_st); //Button pressed
-			co2threshold = parseInt(co2threshold_st);  // CO2 is over the threshold 
-			co2calibration = parseInt(co2calibration_st);// CO2 Calibration flag
-			var co2ppm_hex =(intput_list[5].toString(16).padStart(2, '0'))+(intput_list[4].toString(16).padStart(2, '0'));
-			co2_ppm = parseInt(co2ppm_hex, 16);  //CO2 ppm calculate
-			if (co2_ppm < 0) {
+	else if (fPort == 127 && payloadlens == 6) {
+		var intput_list = input.bytes;
+		var battery_int = intput_list[1];// battery calculate
+		battery_volt = (21 + battery_int) / 10;
+		temperature_int = intput_list[2]; //temperature calculate
+		if (temperature_int > 125) {
+			temperature = temperature_int - 256;
+		}
+		else {
+			temperature = temperature_int;
+		}
+		humi = intput_list[3]; //Humidity calculate
+		var co2_hex = intput_list[0].toString(16).padStart(2, '0'); // Sensor Status calculate
+		var co2_binary = hex2bin(co2_hex);
+		var trigger_st = co2_binary.substring(7, 8);
+		var button_st = co2_binary.substring(6, 7);
+		var co2threshold_st = co2_binary.substring(3, 4);
+		var co2calibration_st = co2_binary.substring(2, 3);
+		trigger = parseInt(trigger_st); //Trigger Event
+		button = parseInt(button_st); //Button pressed
+		co2threshold = parseInt(co2threshold_st);  // CO2 is over the threshold 
+		co2calibration = parseInt(co2calibration_st);// CO2 Calibration flag
+		var co2ppm_hex = (intput_list[5].toString(16).padStart(2, '0')) + (intput_list[4].toString(16).padStart(2, '0'));
+		co2_ppm = parseInt(co2ppm_hex, 16);  //CO2 ppm calculate
+		if (co2_ppm < 0) {
 			co2_ppm = 0;
-			} else if (co2_ppm > 40000) {
+		} else if (co2_ppm > 40000) {
 			co2_ppm = 40000;
-			} else {
+		} else {
 			co2_ppm = co2_ppm;
-			}
+		}
 
-			return {
+		return {
 			data: {
-			battery_volt,
-			temperature,
-			humi,
-			trigger,
-			button,
-			co2threshold,
-			co2calibration,
-			co2_ppm,
+				battery_volt,
+				temperature,
+				humi,
+				trigger,
+				button,
+				co2threshold,
+				co2calibration,
+				co2_ppm,
 			},
-			};
+		};
 	}
-	else{
-			var fPort = input.fPort;
-			var payloadlength = input.bytes.length;
-			var message = 'Invalid fPort or payload length';
-			return {
-			  data: {
+	else {
+		var fPort = input.fPort;
+		var payloadlength = input.bytes.length;
+		var message = 'Invalid fPort or payload length';
+		return {
+			data: {
 				fPort,
 				payloadlength,
 				message,
-			  },
-			};
+			},
+		};
 	}
 }
 ////////////* MerryIot CO2 sensor End !!*////////////
@@ -302,111 +302,111 @@ function decodeUplink(input) {
 ////////////* MerryIot Open/Close sensor*////////////
 
 //hex to binary function
-function hex2bin(hex){
-  return (parseInt(hex, 16).toString(2)).padStart(8, '0');
+function hex2bin(hex) {
+	return (parseInt(hex, 16).toString(2)).padStart(8, '0');
 }
 
 //MerryIot Open/Close sensor
 function decodeUplink(input) {
 	var fPort = input.fPort;
 	var payloadlens = input.bytes.length;
-	if(fPort==120 && payloadlens==10){
+	if (fPort == 120 && payloadlens == 10) {
 		var intput_list = input.bytes;
-		var battery_int=intput_list[1];// battery calculate
-		battery_volt = (21+battery_int)/10;
-		temperature_hex= (intput_list[3].toString(16).padStart(2, '0'))+(intput_list[2].toString(16).padStart(2, '0'));  //temperature calculate
-		if((parseInt(temperature_hex, 16))>1250){
-			temperature = ((parseInt(temperature_hex, 16))-65536)/10;
+		var battery_int = intput_list[1];// battery calculate
+		battery_volt = (21 + battery_int) / 10;
+		temperature_hex = (intput_list[3].toString(16).padStart(2, '0')) + (intput_list[2].toString(16).padStart(2, '0'));  //temperature calculate
+		if ((parseInt(temperature_hex, 16)) > 1250) {
+			temperature = ((parseInt(temperature_hex, 16)) - 65536) / 10;
 		}
-		else{
-			temperature = (parseInt(temperature_hex, 16))/10;
+		else {
+			temperature = (parseInt(temperature_hex, 16)) / 10;
 		}
-		humi =  intput_list[4]; //Humidity calculate
+		humi = intput_list[4]; //Humidity calculate
 		var door_hex = intput_list[0].toString(16).padStart(2, '0'); // Sensor Status calculate
-		var door_binary = hex2bin(door_hex); 
-		var open_st = door_binary.substring(7, 8); 
-		var button_st = door_binary.substring(6, 7); 
-		var tamper_st = door_binary.substring(5, 6); 
-		var tilt_st = door_binary.substring(4, 5); 
+		var door_binary = hex2bin(door_hex);
+		var open_st = door_binary.substring(7, 8);
+		var button_st = door_binary.substring(6, 7);
+		var tamper_st = door_binary.substring(5, 6);
+		var tilt_st = door_binary.substring(4, 5);
 
 		open = parseInt(open_st); // Door status
 		button = parseInt(button_st); // Button pressed
 		tamper = parseInt(tamper_st); // Tamper detected
 		tilt = parseInt(tilt_st); // Tilt detected
 
-		var time_hex = (intput_list[6].toString(16).padStart(2, '0'))+(intput_list[5].toString(16).padStart(2, '0')); 
+		var time_hex = (intput_list[6].toString(16).padStart(2, '0')) + (intput_list[5].toString(16).padStart(2, '0'));
 		time = parseInt(time_hex, 16); //Time elapsed since last event trigger
-		var count_hex = (intput_list[9].toString(16).padStart(2, '0'))+(intput_list[8].toString(16))+(intput_list[7].toString(16).padStart(2, '0')); 
+		var count_hex = (intput_list[9].toString(16).padStart(2, '0')) + (intput_list[8].toString(16)) + (intput_list[7].toString(16).padStart(2, '0'));
 		count = parseInt(count_hex, 16); //Total count of event triggers
-		  
+
 		return {
-		data: {
-		  battery_volt,
-		  temperature,
-		  humi,
-		  open,
-		  button,
-		  tamper,
-		  tilt,
-		  time,
-		  count
-		},
-		};
-  }
-  else if (fPort==120 && payloadlens==9){
-			var intput_list = input.bytes;
-			var battery_int=intput_list[1];// battery calculate
-			battery_volt = (21+battery_int)/10;
-			temperature_int= intput_list[2]; //temperature calculate
-			if(temperature_int>125){
-				temperature = temperature_int-256;
-			}
-			else{
-				temperature = temperature_int;
-			}
-			humi =  intput_list[3]; //Humidity calculate
-			var door_hex = intput_list[0].toString(16).padStart(2, '0'); // Sensor Status calculate
-			var door_binary = hex2bin(door_hex); 
-			var open_st = door_binary.substring(7, 8); 
-			var button_st = door_binary.substring(6, 7); 
-			var tamper_st = door_binary.substring(5, 6); 
-			var tilt_st = door_binary.substring(4, 5); 
-
-			open = parseInt(open_st); // Door status
-			button = parseInt(button_st); // Button pressed
-			tamper = parseInt(tamper_st); // Tamper detected
-			tilt = parseInt(tilt_st); // Tilt detected
-
-			var time_hex = (intput_list[5].toString(16).padStart(2, '0'))+(intput_list[4].toString(16).padStart(2, '0')); 
-			time = parseInt(time_hex, 16); //Time elapsed since last event trigger
-			var count_hex = (intput_list[8].toString(16).padStart(2, '0'))+(intput_list[7].toString(16).padStart(2, '0'))+(intput_list[6].toString(16).padStart(2, '0')); 
-			count = parseInt(count_hex, 16); //Total count of event triggers
-
-			return {
 			data: {
-			battery_volt,
-			temperature,
-			humi,
-			open,
-			button,
-			tamper,
-			tilt,
-			time,
-			count
+				battery_volt,
+				temperature,
+				humi,
+				open,
+				button,
+				tamper,
+				tilt,
+				time,
+				count
 			},
-			};
+		};
 	}
-  else{
-			var fPort = input.fPort;
-			var payloadlength = input.bytes.length;
-			var message = 'Invalid fPort or payload length';
-			return {
-			  data: {
+	else if (fPort == 120 && payloadlens == 9) {
+		var intput_list = input.bytes;
+		var battery_int = intput_list[1];// battery calculate
+		battery_volt = (21 + battery_int) / 10;
+		temperature_int = intput_list[2]; //temperature calculate
+		if (temperature_int > 125) {
+			temperature = temperature_int - 256;
+		}
+		else {
+			temperature = temperature_int;
+		}
+		humi = intput_list[3]; //Humidity calculate
+		var door_hex = intput_list[0].toString(16).padStart(2, '0'); // Sensor Status calculate
+		var door_binary = hex2bin(door_hex);
+		var open_st = door_binary.substring(7, 8);
+		var button_st = door_binary.substring(6, 7);
+		var tamper_st = door_binary.substring(5, 6);
+		var tilt_st = door_binary.substring(4, 5);
+
+		open = parseInt(open_st); // Door status
+		button = parseInt(button_st); // Button pressed
+		tamper = parseInt(tamper_st); // Tamper detected
+		tilt = parseInt(tilt_st); // Tilt detected
+
+		var time_hex = (intput_list[5].toString(16).padStart(2, '0')) + (intput_list[4].toString(16).padStart(2, '0'));
+		time = parseInt(time_hex, 16); //Time elapsed since last event trigger
+		var count_hex = (intput_list[8].toString(16).padStart(2, '0')) + (intput_list[7].toString(16).padStart(2, '0')) + (intput_list[6].toString(16).padStart(2, '0'));
+		count = parseInt(count_hex, 16); //Total count of event triggers
+
+		return {
+			data: {
+				battery_volt,
+				temperature,
+				humi,
+				open,
+				button,
+				tamper,
+				tilt,
+				time,
+				count
+			},
+		};
+	}
+	else {
+		var fPort = input.fPort;
+		var payloadlength = input.bytes.length;
+		var message = 'Invalid fPort or payload length';
+		return {
+			data: {
 				fPort,
 				payloadlength,
 				message,
-			  },
-			};
+			},
+		};
 	}
 }
 
@@ -416,93 +416,93 @@ function decodeUplink(input) {
 ////////////* MerryIot Leak Detection sensor*////////////
 
 //hex to binary function
-function hex2bin(hex){
-  return (parseInt(hex, 16).toString(2)).padStart(8, '0');
+function hex2bin(hex) {
+	return (parseInt(hex, 16).toString(2)).padStart(8, '0');
 }
 
 //MerryIot Leak Detection sensor
 function decodeUplink(input) {
 	var fPort = input.fPort;
 	var payloadlens = input.bytes.length;
-	if(fPort==126 && payloadlens==5){
+	if (fPort == 126 && payloadlens == 5) {
 		var intput_list = input.bytes;
-		var battery_int=intput_list[1];// battery calculate
-		battery_volt = (21+battery_int)/10;
-		temperature_hex= (intput_list[3].toString(16).padStart(2, '0'))+(intput_list[2].toString(16).padStart(2, '0'));  //temperature calculate
-		if((parseInt(temperature_hex, 16))>1250){
-			temperature = ((parseInt(temperature_hex, 16))-65536)/10;
+		var battery_int = intput_list[1];// battery calculate
+		battery_volt = (21 + battery_int) / 10;
+		temperature_hex = (intput_list[3].toString(16).padStart(2, '0')) + (intput_list[2].toString(16).padStart(2, '0'));  //temperature calculate
+		if ((parseInt(temperature_hex, 16)) > 1250) {
+			temperature = ((parseInt(temperature_hex, 16)) - 65536) / 10;
 		}
-		else{
-			temperature = (parseInt(temperature_hex, 16))/10;
+		else {
+			temperature = (parseInt(temperature_hex, 16)) / 10;
 		}
-		
-		humi =  intput_list[4]; //Humidity calculate
+
+		humi = intput_list[4]; //Humidity calculate
 		var water_hex = intput_list[0].toString(16).padStart(2, '0'); // Sensor Status calculate
-		var water_binary = hex2bin(water_hex); 
-		var water_st = water_binary.substring(7, 8); 
-		var button_st = water_binary.substring(6, 7); 
-		var tamper_st = water_binary.substring(5, 6); 
+		var water_binary = hex2bin(water_hex);
+		var water_st = water_binary.substring(7, 8);
+		var button_st = water_binary.substring(6, 7);
+		var tamper_st = water_binary.substring(5, 6);
 
 		water = parseInt(water_st); // water status
 		button = parseInt(button_st); // Button pressed
 		tamper = parseInt(tamper_st); // Tamper detected
-		  
+
 		return {
-		data: {
-		battery_volt,
-		temperature,
-		humi,
-		water,
-		button,
-		tamper
-		},
+			data: {
+				battery_volt,
+				temperature,
+				humi,
+				water,
+				button,
+				tamper
+			},
 		};
 	}
-	else if (fPort==126 && payloadlens==4){
+	else if (fPort == 126 && payloadlens == 4) {
 		var intput_list = input.bytes;
-		var battery_int=intput_list[1];// battery calculate
-		battery_volt = (21+battery_int)/10;
-		temperature_int= intput_list[2]; //temperature calculate
-		if(temperature_int>125){
-			temperature = temperature_int-256;
+		var battery_int = intput_list[1];// battery calculate
+		battery_volt = (21 + battery_int) / 10;
+		temperature_int = intput_list[2]; //temperature calculate
+		if (temperature_int > 125) {
+			temperature = temperature_int - 256;
 		}
-		else{
+		else {
 			temperature = temperature_int;
 		}
-		humi =  intput_list[3]; //Humidity calculate
+		humi = intput_list[3]; //Humidity calculate
 
 		var water_hex = intput_list[0].toString(16).padStart(2, '0'); // Sensor Status calculate
-		var water_binary = hex2bin(water_hex); 
-		var water_st = water_binary.substring(7, 8); 
-		var button_st = water_binary.substring(6, 7); 
-		var tamper_st = water_binary.substring(5, 6); 
+		var water_binary = hex2bin(water_hex);
+		var water_st = water_binary.substring(7, 8);
+		var button_st = water_binary.substring(6, 7);
+		var tamper_st = water_binary.substring(5, 6);
 
 		water = parseInt(water_st); // water status
 		button = parseInt(button_st); // Button pressed
 		tamper = parseInt(tamper_st); // Tamper detected
 
 		return {
-		data: {
-		battery_volt,
-		temperature,
-		humi,
-		water,
-		button,
-		tamper
-		},
+			data: {
+				battery_volt,
+				temperature,
+				humi,
+				water,
+				button,
+				tamper
+			},
 		};
 	}
-	else{
-			var fPort = input.fPort;
-			var payloadlength = input.bytes.length;
-			var message = 'Invalid fPort or payload length';
-			return {
-			  data: {
+	else {
+		var fPort = input.fPort;
+		var payloadlength = input.bytes.length;
+		var message = 'Invalid fPort or payload length';
+		return {
+			data: {
 				fPort,
 				payloadlength,
 				message,
-			  },
-			};
+			},
+		};
 	}
 }
 ////////////* MerryIot Leak Detection sensor End !!*////////////
