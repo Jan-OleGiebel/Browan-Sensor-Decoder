@@ -62,7 +62,7 @@ function encodeDownlink(input) {
     //Must be boolean
     if (input.data.hasOwnProperty("setTriggerCountWhileOccupied")) {
       outputBytes.push(0x04);
-      if(input.data.setTriggerCountWhileOccupied === true) {
+      if(input.data.setTriggerCountWhileOccupied == true) {
         outputBytes.push(0x01);
         outputBytes.push(0x00);
       } else {
@@ -84,7 +84,7 @@ function encodeDownlink(input) {
     //Must be boolean
     if (input.data.hasOwnProperty("setVibrationDetection")) {
       outputBytes.push(0x06);
-      if (input.data.setVibrationDetection === true) {
+      if (input.data.setVibrationDetection == true) {
         outputBytes.push(0x01);
       } else {
         outputBytes.push(0x00);
