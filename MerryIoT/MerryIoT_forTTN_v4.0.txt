@@ -129,6 +129,11 @@ function decodeUplink(input) {
 				}
 				case 0x04: {
 					data.triggerCountWhileOccupied = hexSwapToDec(bytes[index], bytes[index + 1]);
+                                        if(hexSwapToDec(bytes[index], bytes[index + 1]) === 1) {
+                                            data.triggerCountWhileOccupied = true;
+                                        } else {
+                                            data.triggerCountWhileOccupied = false;
+                                        }
 					index += 2;
 					break;
 				}
@@ -152,7 +157,7 @@ function decodeUplink(input) {
 					break;
 				}
 				case 0x06: {
-					data.vibrationDetection = bytes[index] === 0x01 ? 1 : 0;
+					data.vibrationDetection = bytes[index] === 0x01 ? true : false;
 					index++;
 					break;
 				}
