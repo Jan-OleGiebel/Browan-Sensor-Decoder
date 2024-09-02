@@ -64,7 +64,9 @@ function encodeDownlink(input) {
       outputBytes.push(0x04);
       if(input.data.setTriggerCountWhileOccupied === true) {
         outputBytes.push(0x01);
+        outputBytes.push(0x00);
       } else {
+        outputBytes.push(0x00);
         outputBytes.push(0x00);
       }
     }
