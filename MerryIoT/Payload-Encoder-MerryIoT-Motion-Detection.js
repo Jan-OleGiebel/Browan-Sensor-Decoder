@@ -59,10 +59,14 @@ function encodeDownlink(input) {
       outputBytes.push(dec2Hex(input.data.setFreeDetectionTime));
     }
 
-    //Must be int (interpreted as boolean)
+    //Must be boolean
     if (input.data.hasOwnProperty("setTriggerCountWhileOccupied")) {
       outputBytes.push(0x04);
-      outputBytes = outputBytes.concat(dec2HexSwap(input.data.setTriggerCountWhileOccupied));
+      if(input.data.setTriggerCountWhileOccupied === true) {
+        outputBytes.push(0x01);
+      } else {
+        outputBytes.push(0x00);
+      }
     }
 
     //Must be either "room" or "desk"
@@ -75,10 +79,10 @@ function encodeDownlink(input) {
       }
     }
 
-    //Must be int (interpreted as boolean)
+    //Must be boolean
     if (input.data.hasOwnProperty("setVibrationDetection")) {
       outputBytes.push(0x06);
-      if (input.data.setVibrationDetection === 1) {
+      if (input.data.setVibrationDetection === true) {
         outputBytes.push(0x01);
       } else {
         outputBytes.push(0x00);
